@@ -1,6 +1,4 @@
-//Note to grader: My "Save" words function works for the Similar Words but not for Rhyming words 
-// and I'm not sure why. I have used the same Eventlistener code/onclick for the buttons for both but
-//it seems like the buttons in the nested for loop aren't being affected by it.
+
 
 /**
  * Returns a list of objects grouped by some property. For example:
@@ -68,6 +66,9 @@ savedWords.textContent = "(None)";
  *   A function that updates the page.
  */
 function datamuseRequest(url, callback) {
+
+    wordOutput.innerHTML = "Loading";
+
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -138,26 +139,8 @@ const rhymeCallBack = (listOfRhymes) => {
             for (let i=1; i <= Object.keys(groups).length; i++) {
                 wordOutput.innerHTML += `<h3>Syllables: ${i}</h3>`;
                 for (group in groups[i]) {
-            
-                    // wordOutput.innerHTML += `<li>${word}<button class="btn btn-sm btn-outline-success" type="button">(Save)</button></li>`;
-                    const btn = document.createElement("button");
-                    btn.type = "button";
-                    btn.classList.add("btn", "btn-sm", "btn-outline-success");
-                    btn.textContent = "(Save)";
                     const {word} = groups[i][group];
-                    const listItem = document.createElement("li");
-                    listItem.textContent = word;
-                    listItem.append(btn);
-                    wordOutput.append(listItem);
-
-                    // btn.addEventListener("click", () => {
-                    //     console.log("it clicked");
-                    //     addToSavedWords(word);
-                    // })
-                    
-                    btn.onclick = function(){
-                        addToSavedWords(word);
-                       }
+                    wordOutput.innerHTML += `<li>${word}<button class="btn btn-sm btn-outline-success" type="button" onclick="addToSavedWords('${word}')">(Save)</button></li>`;
 
                 }
 
@@ -234,6 +217,28 @@ showSynonymsButton.addEventListener("click", ()=> {
 
     datamuseRequest(getDatamuseSimilarToUrl(wordInput.value), similarCallBack);
 })
+
+wordInput.addEventListener("keydown", function(event) {
+
+    if (event.key === 'Enter') {
+
+        if (showSynonymsButton.classList.contains("btn-primary")) {
+
+        datamuseRequest(getDatamuseSimilarToUrl(wordInput.value), similarCallBack);
+
+        }
+
+        if (showRhymesButton.classList.contains("btn-primary")) {
+        
+        datamuseRequest(getDatamuseRhymeUrl(wordInput.value), rhymeCallBack);
+
+        }
+
+    }
+
+})
+
+
 
 
 //Save button onclick event listener
